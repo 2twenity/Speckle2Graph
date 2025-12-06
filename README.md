@@ -1,7 +1,7 @@
 # Speckle2Graph
 <!-- !["test"](/pictures/Speckle2GraphVersion4.gif "Enable Speckle 2Graph Pipeline") -->
 
-<img src="pictures/Speckle2GraphVersion4.gif" alt="Sample Image" width="650" height="280">
+<img src="pictures/Speckle2GraphVersion4.gif" alt="Sample Image" width="650" height="400">
 
 # Purpose of the Library
 This is an alpha version, so any feedback of bugs is very appreciated
