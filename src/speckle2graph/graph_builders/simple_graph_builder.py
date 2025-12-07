@@ -2,8 +2,8 @@ import networkx as nx
 from rtree import index
 from tqdm import tqdm
 
-from speckle2graph.models.logical import LogicalNode
-from speckle2graph.models.geometry import GeometryNode
+from speckle2graph.models import LogicalNode
+from speckle2graph.models import GeometryNode
 from speckle2graph.utils.helpers import flatten_dictionary
 
 import json

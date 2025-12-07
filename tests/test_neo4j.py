@@ -1,6 +1,6 @@
-from speckle2graph.graph_builders.simple_graph_builder import GraphBuilder
-from speckle2graph.parsers.traverseDAG import TraverseSpeckleDAG
-from speckle2graph.neo4j_queries.basic_query import write_logical_graph_to_neo4j, write_geometrical_graph_to_neo4j
+from speckle2graph import GraphBuilder
+from speckle2graph import TraverseSpeckleDAG
+from speckle2graph import write_logical_graph_to_neo4j, write_geometrical_graph_to_neo4j
 
 from neo4j import GraphDatabase
 from specklepy.api.client import SpeckleClient

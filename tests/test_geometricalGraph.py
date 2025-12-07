@@ -1,5 +1,5 @@
-from speckle2graph.graph_builders.simple_graph_builder import GraphBuilder
-from speckle2graph.parsers.traverseDAG import TraverseSpeckleDAG
+from speckle2graph import GraphBuilder
+from speckle2graph import TraverseSpeckleDAG
 
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport

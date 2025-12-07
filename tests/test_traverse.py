@@ -24,7 +24,7 @@ def receive_speckle_object():
     return root
 
 def test_traverse(root):
-    from speckle2graph.parsers.traverseDAG import TraverseSpeckleDAG
+    from speckle2graph import TraverseSpeckleDAG
 
     result = TraverseSpeckleDAG(root)
 
