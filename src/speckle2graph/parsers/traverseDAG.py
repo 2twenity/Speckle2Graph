@@ -1,8 +1,8 @@
-from speckle_revit_graph.models.logical import LogicalNode
-from speckle_revit_graph.models.geometry import GeometryNode
+from speckle2graph.models.logical import LogicalNode
+from speckle2graph.models.geometry import GeometryNode
 
-from speckle_revit_graph.utils.helpers import transform_faces
-from speckle_revit_graph.utils.helpers import transform_vertices
+from speckle2graph.utils.helpers import transform_faces
+from speckle2graph.utils.helpers import transform_vertices
 
 from collections import deque
 
@@ -17,7 +17,7 @@ import json
 import numpy as np
 import trimesh
 
-class TraverseRevitDAG:
+class TraverseSpeckleDAG:
     """Parses speckle DAG and yield logical and geometrical objects"""
     def __init__(self, speckle_root):
         self.root = speckle_root

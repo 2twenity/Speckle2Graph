@@ -1,9 +1,9 @@
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport
+from specklepy.objects.base import Base
 from specklepy.api import operations
 from dotenv import load_dotenv
 import os
-import sys
 
 
 def receive_speckle_object():
@@ -24,13 +24,13 @@ def receive_speckle_object():
     return root
 
 def test_traverse(root):
-    from speckle_revit_graph.parsers.traverseDAG import TraverseRevitDAG
+    from speckle2graph.parsers.traverseDAG import TraverseSpeckleDAG
 
-    result = TraverseRevitDAG(root)
+    result = TraverseSpeckleDAG(root)
 
     return result
 
 root  = receive_speckle_object()
 result = test_traverse(root).parse_obj()
 
-print(next(result))
+first_obj = next(result, 0)
