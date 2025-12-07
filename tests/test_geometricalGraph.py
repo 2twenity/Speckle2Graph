@@ -1,5 +1,5 @@
 from speckle2graph import GraphBuilder
-from speckle2graph import TraverseSpeckleDAG
+from speckle2graph import TraverseRevitDAG
 
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport
@@ -22,7 +22,7 @@ def receive_speckle_object():
     return root
 
 def test_geometric_graph(root):
-    traversed_speckle_object = TraverseSpeckleDAG(root)
+    traversed_speckle_object = TraverseRevitDAG(root)
 
     graph_builder = GraphBuilder(traversed_speckle_object=traversed_speckle_object.parse_obj())
     graph_builder.separate_logical_and_geometrical_objects()
