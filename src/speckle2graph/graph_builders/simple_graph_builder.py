@@ -3,6 +3,7 @@ from rtree import index
 from tqdm import tqdm
 from loguru import logger
 
+from speckle2graph import TraverseRevitDAG
 from speckle2graph.models import LogicalNode
 from speckle2graph.models import GeometryNode
 from speckle2graph.utils.helpers import flatten_dictionary
@@ -12,9 +13,9 @@ import numpy as np
 
 class GraphBuilder:
     def __init__(self, traversed_speckle_object):
-        self.traversed_speckle_object = traversed_speckle_object
-        self.logical_objects = {}
-        self.geometrical_objects = {}
+        self.traversed_speckle_object: TraverseRevitDAG = traversed_speckle_object
+        self.logical_objects: dict = {}
+        self.geometrical_objects: dict = {}
         self.logical_graph = nx.DiGraph()
         self.geometrical_graph = nx.DiGraph()
 
@@ -30,7 +31,8 @@ class GraphBuilder:
                 self.geometrical_objects[speckle_object.id] = speckle_object
 
     def build_logical_graph(self, edge_type="CONTAINS"):
-        if self.logical_objects == {} or self.geometrical_objects == {}:
+        if self.logical_objects == {}:
+            logger.info("Calling a method to separate logical and geometrical elements")
             self._separate_logical_and_geometrical_objects()
 
         for key, value in self.logical_objects.items():
@@ -68,7 +70,7 @@ class GraphBuilder:
 
     
     def build_geometrical_graph(self, edge_type="CONNECTED_TO"):
-        if self.logical_objects == {} or self.geometrical_objects == {}:
+        if len(self.geometrical_objects) == 0:
             self._separate_logical_and_geometrical_objects()
 
         for obj in self.geometrical_objects.values():

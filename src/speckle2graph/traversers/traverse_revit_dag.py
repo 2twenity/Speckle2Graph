@@ -23,12 +23,15 @@ class TraverseRevitDAG:
     def __init__(self, speckle_root: DataObject, objects_to_skip: list[str] = []):
         self.root = speckle_root
         self.instanced_objects = {}
-        self.flattened_speckle_dag = self.traverse_dag(objects_to_skip=objects_to_skip) 
+        self.flattened_speckle_dag = self._traverse_dag(objects_to_skip=objects_to_skip) 
 
     def __str__(self):
-        return f"{self.root.name}"
+        return f"Traversed Revit DAG with root name: {self.root.name}"
 
-    def traverse_dag(self, objects_to_skip: list = []) -> Generator[LogicalNode | GeometryNode, None, None]:
+    def __iter__(self):
+        return iter(self.flattened_speckle_dag)
+
+    def _traverse_dag(self, objects_to_skip: list = []) -> Generator[LogicalNode | GeometryNode, None, None]:
     
         self.failed_objects: dict[str, DataObject] = {}
 
