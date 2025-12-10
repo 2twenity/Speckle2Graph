@@ -36,6 +36,8 @@ class GraphBuilder:
             self._separate_logical_and_geometrical_objects()
 
         for key, value in self._logical_objects.items():
+            self.logical_graph.add_node(key, name=value.name, id=value.id, speckle_type=value.speckleType)
+
             for contained_element in value.containedElementsIds:
                 self.logical_graph.add_node(contained_element, id=contained_element)
                 self.logical_graph.add_edge(key, contained_element, name=edge_type)
@@ -50,7 +52,7 @@ class GraphBuilder:
         for i, obj in enumerate(self._geometrical_objects.values()):
             self._spatial_index.insert(i, obj.bounding_box, obj=obj.id)
 
-    def _find_intersection_pairs(self):
+    def _find_intersection_pairs(self, precision: float = 0.05):
         from trimesh.collision import CollisionManager
         intersection_pairs = set()
 
@@ -63,13 +65,17 @@ class GraphBuilder:
                     collisionManager.add_object(name = element.id, mesh = element.geometry)
                     collisionManager.add_object(name = intersection.object, mesh = self._geometrical_objects[intersection.object].geometry)
                     result = collisionManager.in_collision_internal(return_names=True)
+                    distance_check = collisionManager.min_distance_internal(return_names=True)
+                    if not result[0] and distance_check[0] < precision and distance_check[0] > 0:
+                        intersection_pairs.add(distance_check[1])
                     if result[0]:
                         intersection_pairs.add(tuple(*result[1]))
+                        
 
         return intersection_pairs
 
     
-    def build_geometrical_graph(self, edge_type="CONNECTED_TO"):
+    def build_geometrical_graph(self, edge_type="CONNECTED_TO", precision: float = 0.05):
         if len(self._geometrical_objects) == 0:
             self._separate_logical_and_geometrical_objects()
 
@@ -89,7 +95,7 @@ class GraphBuilder:
                                             centroid = obj.centroid
                                         )
             
-        intersection_pairs = self._find_intersection_pairs()
+        intersection_pairs = self._find_intersection_pairs(precision=precision)
 
         for pair in intersection_pairs:
             first_centroid = self._geometrical_objects[pair[0]].centroid
