@@ -22,6 +22,10 @@ class GraphBuilder:
         p = index.Property()
         p.dimension = 3
         self._spatial_index = index.Index(properties=p)
+
+        self._logical_graoh_written_to_neo4j = False
+        self._geometrical_graph_written_to_neo4j = False
+        self._geometrical_to_logical_mapping_written_to_neo4j = False
     
     def _separate_logical_and_geometrical_objects(self):
         for speckle_object in self._traversed_speckle_object:
@@ -31,16 +35,24 @@ class GraphBuilder:
                 self._geometrical_objects[speckle_object.id] = speckle_object
 
     def build_logical_graph(self, edge_type="CONTAINS"):
+        
         if self._logical_objects == {}:
             logger.info("Calling a method to separate logical and geometrical elements")
             self._separate_logical_and_geometrical_objects()
 
         for key, value in self._logical_objects.items():
-            self.logical_graph.add_node(key, name=value.name, id=value.id, speckle_type=value.speckleType)
+            self.logical_graph.add_node(key, name=value.name, id=value.id, speckle_type=value.speckle_type, logical_write_status=True)
 
-            for contained_element in value.containedElementsIds:
-                self.logical_graph.add_node(contained_element, id=contained_element)
-                self.logical_graph.add_edge(key, contained_element, name=edge_type)
+            for contained_element in value.contained_elements_ids:
+                self.logical_graph.add_node(contained_element, id=contained_element, logical_write_status=False)
+                self.logical_graph.add_edge(key, contained_element, name=edge_type, logical_write_status=False)
+
+        for edge in self.logical_graph.edges(data=True):
+            first_node = self.logical_graph.nodes[edge[0]]
+            second_node = self.logical_graph.nodes[edge[1]]
+            
+            if first_node['logical_write_status'] and second_node['logical_write_status']:
+                edge[2]['logical_write_status'] = True
 
         logger.info(
             "Logical graph built: {} nodes, {} edges",
@@ -90,6 +102,8 @@ class GraphBuilder:
     
             self.geometrical_graph.add_node(obj.id,
                                             name = obj.name,
+                                            category = obj.category,
+                                            speckle_type = obj.speckle_type,
                                             RevitId = node_properties['elementId'],
                                             properties = properties,
                                             centroid = obj.centroid

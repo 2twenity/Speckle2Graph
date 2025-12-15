@@ -5,8 +5,8 @@ class LogicalNode:
     """Represents an object that groups geometry objects"""
     id: str
     name: str
-    speckleType: str
-    containedElementsIds: list | None
+    speckle_type: str
+    contained_elements_ids: list | None
 
     def __str__(self):
       return f"Logical Object: {self.name}"

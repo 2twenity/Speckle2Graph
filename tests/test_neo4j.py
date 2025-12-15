@@ -1,6 +1,6 @@
 from speckle2graph import GraphBuilder
 from speckle2graph import TraverseRevitDAG
-from speckle2graph import write_logical_graph_to_neo4j, write_geometrical_graph_to_neo4j, assign_labels_to_geometrical_graph_to_neo4j
+from speckle2graph import Neo4jClientDriverWrapper
 
 from neo4j import GraphDatabase
 from specklepy.api.client import SpeckleClient
@@ -48,7 +48,10 @@ def test_write_logical_graph_to_neo4j(graph_builder_object: GraphBuilder):
     
     with GraphDatabase.driver(URI, auth=auth) as driver:
         driver.verify_connectivity()
-        write_logical_graph_to_neo4j(graph_builder_object, driver)
+        
+        neo4j_client_wrapper = Neo4jClientDriverWrapper(driver=driver, graph_builder_object=graph_builder_object)
+        # write_geometrical_graph_to_neo4j(graph_builder_object, driver)
+        Neo4jClientDriverWrapper.write_logical_graph_to_neo4j(neo4j_client_wrapper)
 
 def test_write_geometrical_graph_to_neo4j(graph_builder_object: GraphBuilder):
     load_dotenv()
@@ -59,9 +62,17 @@ def test_write_geometrical_graph_to_neo4j(graph_builder_object: GraphBuilder):
     
     with GraphDatabase.driver(URI, auth=auth) as driver:
         driver.verify_connectivity()
-        write_geometrical_graph_to_neo4j(graph_builder_object, driver)
+        
+        neo4j_client_wrapper = Neo4jClientDriverWrapper(driver=driver, graph_builder_object=graph_builder_object)
+        # write_geometrical_graph_to_neo4j(graph_builder_object, driver)
+        Neo4jClientDriverWrapper.write_geometrical_graph_to_neo4j(neo4j_client_wrapper)
 
-def test_assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object: GraphBuilder):
+def test_logical_and_geometrical_graph_writing():
+    root = receive_speckle_object()
+    full_graph_builder_object = build_logic_graph(root)
+    full_graph_builder_object.build_logical_graph()
+    full_graph_builder_object.build_geometrical_graph()
+
     load_dotenv()
     neo4j_password = os.getenv("NEO4J_PASSWORD")
     neo4j_username = os.getenv("NEO4J_USERNAME")
@@ -70,12 +81,18 @@ def test_assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object: Graph
     
     with GraphDatabase.driver(URI, auth=auth) as driver:
         driver.verify_connectivity()
-        assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object, driver)
-
-root = receive_speckle_object()
+        
+        neo4j_client_wrapper = Neo4jClientDriverWrapper(driver=driver, graph_builder_object=full_graph_builder_object)
+        neo4j_client_wrapper.write_geometrical_graph_to_neo4j(neo4j_client_wrapper)
+        neo4j_client_wrapper.write_logical_graph_to_neo4j(neo4j_client_wrapper)
+        
+# root = receive_speckle_object()
 # logical_graph_builder_object = build_logic_graph(root)
-geometrical_graph_builder_object = build_geometric_graph(root)
+# geometrical_graph_builder_object = build_geometric_graph(root)
+
+test_logical_and_geometrical_graph_writing()
 
 # test_write_logical_graph_to_neo4j(graph_builder_object=logical_graph_builder_object)
-test_write_geometrical_graph_to_neo4j(graph_builder_object=geometrical_graph_builder_object)
-test_assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object=geometrical_graph_builder_object)
+# test_write_geometrical_graph_to_neo4j(graph_builder_object=geometrical_graph_builder_object)
+# test_assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object=geometrical_graph_builder_object)
+# test_write_mappings(graph_builder_object=logical_graph_builder_object)

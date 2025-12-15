@@ -10,6 +10,10 @@ The library aims to enrich the Speckle-Directed Acyclic Graph (DAG) by adding ed
 
 Currently we support Neo4j only
 
+# Prerequisites
+- Ensure that the Speckle models were uploaded using the **latest versions of the connectors**.
+- Ensure that your Neo4j instance has the **APOC plugin** installed. Since Cypher queries are used to insert data and they don't support dynamic labels from parameters, we are forced to use APOC to save time on writing label-assigning queries manually.
+
 # Usage
 ```python
 # Install the library (PYPI will be added soon)
@@ -29,24 +33,25 @@ root = operations.receive(ROOT, remote_transport = transport)
 ```python
 # Build a Graph in 4 lines of code
 traversed_object = TraverseRevitDAG(root)
-graph_biulder = GraphBuilder(traversed_speckle_object=traversed_object)
-graph_biulder.build_logical_graph()
-graph_biulder.build_geometrical_graph()
+graph_builder = GraphBuilder(traversed_speckle_object=traversed_object)
+graph_builder.build_logical_graph()
+graph_builder.build_geometrical_graph()
 ```
 
 ```python
 # Some predefined quries could be imported
-from speckle2graph import write_logical_graph_to_neo4j
-from speckle2graph import write_geometrical_graph_to_neo4j 
-from speckle2graph import assign_labels_to_geometrical_graph_to_neo4j
+from speckle2graph import Neo4jClientDriverWrapper
 from neo4j import GraphDatabase
 
 # Authorize and write the graph to Neo4j for further analysis. 
 with GraphDatabase.driver(URI, auth=auth) as driver:
     driver.verify_connectivity()
-    write_logical_graph_to_neo4j(graph_builder_object, driver)
-    write_geometrical_graph_to_neo4j(graph_builder_object, driver)
-    assign_labels_to_geometrical_graph_to_neo4j(graph_builder_object, driver)
+    neo4j_client_wrapper = Neo4jClientDriverWrapper(
+        driver=driver,
+        graph_builder_object=full_graph_builder_object
+    )
+    neo4j_client_wrapper.write_geometrical_graph_to_neo4j(neo4j_client_wrapper)
+    neo4j_client_wrapper.write_logical_graph_to_neo4j(neo4j_client_wrapper)
 ```
 
 # Development Roadmap
