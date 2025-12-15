@@ -64,8 +64,8 @@ class TraverseRevitDAG:
 
                 logical_node = LogicalNode(  id = head.id,
                                     name = head.name,
-                                    containedElementsIds = elements_ids_contained_in_logical_element,
-                                    speckleType = head.speckle_type
+                                    contained_elements_ids = elements_ids_contained_in_logical_element,
+                                    speckle_type = head.speckle_type
                                 )
                 items_yielded += 1
                 yield logical_node
@@ -116,7 +116,8 @@ class TraverseRevitDAG:
                     geometry_node = GeometryNode(
                         name = head.name,
                         id = head.id,
-                        speckleType = head.speckle_type,
+                        category = head.category,
+                        speckle_type = head.speckle_type,
                         geometry = result_mesh,
                         centroid = result_mesh.centroid,
                         raw_vertices = result_mesh.vertices,

@@ -7,7 +7,8 @@ class GeometryNode:
     """Represents an object that has a displayValue"""
     name: str
     id: str
-    speckleType: str
+    category: str
+    speckle_type: str
     geometry: list | None
     centroid: Union[tuple[float, float, float], np.ndarray]
     raw_vertices: str

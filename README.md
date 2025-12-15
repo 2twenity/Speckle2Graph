@@ -10,6 +10,10 @@ The library aims to enrich the Speckle-Directed Acyclic Graph (DAG) by adding ed
 
 Currently we support Neo4j only
 
+# Prerequisites
+- Ensure that the Speckle models were uploaded using the **latest versions of the connectors**.
+- Ensure that your Neo4j instance has the **APOC plugin** installed. Since Cypher queries are used to insert data and they don't support dynamic labels from parameters, we are forced to use APOC to save time on writing label-assigning queries manually.
+
 # Usage
 ```python
 # Install the library (PYPI will be added soon)
