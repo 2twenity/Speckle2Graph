@@ -21,3 +21,7 @@ class GeometryNode:
 
     def __repr__(self):
       return f"Geometry Object: {self.name}"
+
+@dataclass
+class BoundingBox:
+    pass

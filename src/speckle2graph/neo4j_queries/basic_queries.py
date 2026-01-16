@@ -1,17 +1,33 @@
-from speckle2graph.graph_builders.simple_graph_builder import GraphBuilder
-from speckle2graph.utils.helpers import label_specific_queriy_maker
-
+from typing import Optional, TYPE_CHECKING
+from ..graph_builders.graph_builders import DataGraphBuilder
+from .label_makers import Neo4jRevitLabelAssigner
+from .label_makers import Neo4jIfcLabelAssigner
+from .label_makers import Neo4jLabelAssigner
 from tqdm import tqdm
 
-class Neo4jClientDriverWrapper:
-    def __init__(self, driver, graph_builder_object: GraphBuilder):
-        self.neo4j_client_driver = driver
-        self.graph_builder_object: GraphBuilder = graph_builder_object
-        self.logical_graph_written_status = False
-        self.geometrical_graph_written_status = False
-        self.mapping_written_status = False
+if TYPE_CHECKING:
+    from neo4j import Driver
 
-    def write_geometrical_to_logical_mapping_to_neo4j(self, batch_size=100):
+class Neo4jClientDriverWrapper:
+    def __init__(
+        self, 
+        driver: "Driver", 
+        graph_builder_object: DataGraphBuilder, 
+        label_assigner: Optional[Neo4jLabelAssigner] = None
+        ) -> None:
+        """
+        Initialize Neo4j client wrapper with dependency injection.
+        
+        Args:
+            driver: Neo4j database driver instance
+            graph_builder_object: Graph builder containing the graph to write
+            label_assigner: Label assigner instance. If None, defaults to Neo4jRevitLabelAssigner.
+        """
+        self.neo4j_client_driver = driver
+        self.graph_builder_object = graph_builder_object
+        self.label_assigner = label_assigner if label_assigner is not None else Neo4jRevitLabelAssigner()
+
+    def _write_mapping_geometry_to_logic_to_neo4j(self, batch_size: int = 100) -> None:
         """Template query to write geometrical to logical mapping edges to Neo4j database"""
 
         mapping_edges_for_neo4j = [
@@ -32,9 +48,7 @@ class Neo4jClientDriverWrapper:
                 batch = batch
             )
 
-        self.mapping_written_status = True
-
-    def write_logical_graph_to_neo4j(self, batch_size=100):
+    def _write_logical_graph_to_neo4j(self, batch_size: int = 100) -> None:
         """Template query to write logical nodes and edges to Neo4j database"""
         
         self.neo4j_client_driver.execute_query("""CREATE CONSTRAINT speckle_id_unique IF NOT EXISTS FOR (n:Collection) REQUIRE (n.id) IS UNIQUE""")
@@ -75,12 +89,8 @@ class Neo4jClientDriverWrapper:
                 """,
                 batch = batch
             )
-
-        self.logical_graph_written_status = True
-        if self.geometrical_graph_written_status == True:
-            self.write_geometrical_to_logical_mapping_to_neo4j()
         
-    def write_geometrical_graph_to_neo4j(self, batch_size=100):
+    def _write_geometrical_graph_to_neo4j(self, batch_size: int = 100) -> None:
         """Template query to write geometrical nodes and edges to Neo4j database"""
 
         grouped_geometrical_nodes_for_batching = {}
@@ -89,7 +99,6 @@ class Neo4jClientDriverWrapper:
             node_for_writing = {
                 "id": node[0],
                 "name": node[1]['name'],
-                "RevitId": node[1]['RevitId'],
                 "centroid": node[1]['centroid'],
                 "category": node[1]['category'],
                 "speckle_type": node[1]['speckle_type'],
@@ -97,8 +106,6 @@ class Neo4jClientDriverWrapper:
             }
 
             grouped_geometrical_nodes_for_batching.setdefault(node_for_writing['category'], []).append(node_for_writing)
-
-        # print(f"Number of categories found {len(grouped_geometrical_nodes_for_batching)}")
 
         geometrical_edges_for_neo4j = [
             {
@@ -114,8 +121,8 @@ class Neo4jClientDriverWrapper:
             for i in tqdm(range(0, len(value), batch_size), desc=f"Writing {key} Nodes Batches to Neo4j"):
                 batch = value[i:i + batch_size]
                 first_string_part = "UNWIND $batch as node_data MERGE (n:"
-                second_string_part = f"{label_specific_queriy_maker(key)}"
-                third_string_part = " {id: node_data.id, name: node_data.name, RevitId: node_data.RevitId, centroid: node_data.centroid, category: node_data.category} ) SET n += node_data.properties;"
+                second_string_part = f"{self.label_assigner.assign_label(category=key)}"
+                third_string_part = " {id: node_data.id, name: node_data.name, centroid: node_data.centroid, category: node_data.category} ) SET n += node_data.properties;"
                 query_string = first_string_part + second_string_part + third_string_part
                 self.neo4j_client_driver.execute_query(query_string, batch = batch)
 
@@ -129,6 +136,25 @@ class Neo4jClientDriverWrapper:
                 batch = batch
             )
 
-        self.geometrical_graph_written_status = True
-        if self.logical_graph_written_status:
-            self.write_geometrical_to_logical_mapping_to_neo4j()
+    def write_graph(
+        self, 
+        write_logical: bool = True, 
+        write_geometrical: bool = True, 
+        batch_size: int = 100
+        ) -> None:
+        """
+        Function to write a graph to Neo4j
+
+        Args:
+            write_logical: if True, the hierarchy graph will be written
+            write_geometrical: if True, the geometrical adjacency graph will be written
+            batch_size: defines a size of a batch
+        """
+        if write_logical == False:
+            self._write_geometrical_graph_to_neo4j(batch_size=batch_size)
+        elif write_geometrical == False:
+            self._write_logical_graph_to_neo4j(batch_size=batch_size)
+        else:
+            self._write_logical_graph_to_neo4j(batch_size=batch_size)
+            self._write_geometrical_graph_to_neo4j(batch_size=batch_size)
+            self._write_mapping_geometry_to_logic_to_neo4j(batch_size=batch_size)

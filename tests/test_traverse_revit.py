@@ -1,6 +1,5 @@
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport
-from specklepy.objects.base import Base
 from specklepy.api import operations
 from dotenv import load_dotenv
 import os
@@ -10,8 +9,8 @@ def receive_speckle_object():
 
     load_dotenv()
     speckle_token = os.getenv("SPECKLE_TOKEN")
-    PROJECT_ID = os.getenv("PROJECT_ID")
-    ROOT = os.getenv("ROOT")
+    PROJECT_ID = os.getenv("REVIT_PROJECT_ID")
+    ROOT = os.getenv("REVIT_ROOT")
 
     client = SpeckleClient()
     client.authenticate_with_token(speckle_token)
@@ -28,6 +27,4 @@ def test_traverse(root):
 
 root  = receive_speckle_object()
 result = test_traverse(root)
-
-for obj in result:
-    print(obj)
+print(result)

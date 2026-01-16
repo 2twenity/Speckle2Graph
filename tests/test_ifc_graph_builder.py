@@ -1,18 +1,18 @@
-from speckle2graph import GraphBuilder
-from speckle2graph import TraverseRevitDAG
-
+from speckle2graph import DataGraphBuilder
+from speckle2graph import TraverseIFCDAG
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport
 from specklepy.api import operations
 from dotenv import load_dotenv
 import os
 
+
 def receive_speckle_object():
 
     load_dotenv()
     speckle_token = os.getenv("SPECKLE_TOKEN")
-    PROJECT_ID = os.getenv("PROJECT_ID")
-    ROOT = os.getenv("ROOT")
+    PROJECT_ID = os.getenv("IFC_PROJECT_ID")
+    ROOT = os.getenv("IFC_ROOT")
 
     client = SpeckleClient()
     client.authenticate_with_token(speckle_token)
@@ -21,16 +21,16 @@ def receive_speckle_object():
 
     return root
 
-def test_geometric_graph(root):
-    traversed_speckle_object = TraverseRevitDAG(root)
 
-    graph_builder = GraphBuilder(traversed_speckle_object=traversed_speckle_object)
-    graph_builder.build_geometrical_graph()
+def test_graph_builder(root):
+    traversed_speckle_object = TraverseIFCDAG(root)
+
+    graph_builder = DataGraphBuilder(traversed_speckle_object=traversed_speckle_object)
+    graph_builder.build_graph()
 
     print("Logical Objects Parsed: ", len(graph_builder._logical_objects))
     print("Geometrical Objects Parsed: ", len(graph_builder._geometrical_objects))
-    print(graph_builder.geometrical_graph)
+
 
 root = receive_speckle_object()
-print("Testing Logical Graph Construction")
-test_geometric_graph(root)
+test_graph_builder(root)
