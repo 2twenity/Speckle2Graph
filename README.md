@@ -48,7 +48,7 @@ root = operations.receive(ROOT, remote_transport = transport)
 ```python
 # Build a Graph in 3 lines of code
 traversed_object = TraverseRevitDAG(root)
-graph_builder = GraphBuilder(traversed_speckle_object=traversed_object)
+graph_builder = DataGraphBuilder(traversed_speckle_object=traversed_object)
 graph_builder.build()
 ```
 

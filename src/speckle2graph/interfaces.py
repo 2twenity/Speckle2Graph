@@ -1,5 +1,6 @@
 from typing import Protocol, Iterable
-from speckle2graph.models import GeometryNode, LogicalNode
+from .models.geometry import GeometryNode
+from .models.logical import LogicalNode
 
 class ModelLoader(Protocol):
     def __iter__(self) -> Iterable[GeometryNode|LogicalNode]:

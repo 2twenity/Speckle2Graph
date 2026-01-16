@@ -1,8 +1,8 @@
 from specklepy.objects.data_objects import DataObject
 from specklepy.objects.proxies import InstanceDefinitionProxy
 
-from speckle2graph.traversers.base_traverser import BaseTraverseDAG
-from speckle2graph.traversers.property_extractors import RevitPropertyExtractor
+from .base_traverser import BaseTraverseDAG
+from .property_extractors import RevitPropertyExtractor
 
 
 class TraverseRevitDAG(BaseTraverseDAG):
@@ -19,13 +19,14 @@ class TraverseRevitDAG(BaseTraverseDAG):
         super().__init__(
             speckle_root=speckle_root,
             property_extractor=RevitPropertyExtractor(),
-            objects_to_skip=objects_to_skip
+            objects_to_skip=objects_to_skip,
+            logical_filter=lambda collection, ids: True
         )
 
     def __str__(self):
         return f"Traversed Revit DAG with root name: {self.root.name}"
 
-    def _get_instanced_objects_collection_name(self) -> str:
+    def _get_vendor_specific_instanced_objects_collection_name(self) -> str:
         """
         Override to use Revit-specific collection name for instanced objects
         

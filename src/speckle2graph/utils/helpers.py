@@ -1,4 +1,4 @@
-def flatten_dictionary(d, parent_key='', sep='_'):
+def flatten_dictionary(d, parent_key='', sep='_') -> dict[str, str]:
     items = []
     for k, v in d.items():
         k = k.replace(" ", "_")
@@ -12,20 +12,19 @@ def flatten_dictionary(d, parent_key='', sep='_'):
 
 def transform_faces(speckle_faces: list[int]) -> list[int]:
 
-        new_faces = list(speckle_faces)
-        l = len(new_faces)
-        i = 0
-        trimesh_faces = []
+    new_faces = list(speckle_faces)
+    l = len(new_faces)
+    i = 0
+    trimesh_faces = []
 
-        while i < l:
-            slice_length = new_faces[i]
-            i += 1
-            sli = new_faces[i:i+slice_length]
-            trimesh_faces.append(sli)
-            i += slice_length
+    while i < l:
+        slice_length = new_faces[i]
+        i += 1
+        sli = new_faces[i:i+slice_length]
+        trimesh_faces.append(sli)
+        i += slice_length
 
-        return trimesh_faces
-
+    return trimesh_faces
 
 def transform_vertices(speckle_vertices: list[float]) -> list[list[float]]:
     l = len(speckle_vertices)
@@ -39,5 +38,3 @@ def transform_vertices(speckle_vertices: list[float]) -> list[list[float]]:
         i+=3
 
     return trimesh_vertices # Nested list like [[1.0, 1.0, 1.0], [2.0, 2.0, 2.0]]
-
-    return labels_to_query_mapping[input_category]

@@ -1,4 +1,4 @@
-from speckle2graph import GraphBuilder
+from speckle2graph import DataGraphBuilder
 from speckle2graph import TraverseRevitDAG
 from specklepy.api.client import SpeckleClient
 from specklepy.transports.server import ServerTransport
@@ -25,7 +25,7 @@ def receive_speckle_object():
 def test_graph_builder(root):
     traversed_speckle_object = TraverseRevitDAG(root)
 
-    graph_builder = GraphBuilder(traversed_speckle_object=traversed_speckle_object)
+    graph_builder = DataGraphBuilder(traversed_speckle_object=traversed_speckle_object)
     graph_builder.build_graph()
 
     print("Logical Objects Parsed: ", len(graph_builder._logical_objects))

@@ -1,8 +1,8 @@
 from specklepy.objects.data_objects import DataObject
 from specklepy.objects.proxies import InstanceProxy, InstanceDefinitionProxy
 
-from speckle2graph.traversers.base_traverser import BaseTraverseDAG
-from speckle2graph.traversers.property_extractors import IFCPropertyExtractor
+from .base_traverser import BaseTraverseDAG
+from .property_extractors import IFCPropertyExtractor
 
 
 class TraverseIFCDAG(BaseTraverseDAG):
@@ -19,7 +19,8 @@ class TraverseIFCDAG(BaseTraverseDAG):
         super().__init__(
             speckle_root=speckle_root,
             property_extractor=IFCPropertyExtractor(),
-            objects_to_skip=objects_to_skip
+            objects_to_skip=objects_to_skip,
+            logical_filter=lambda collection, ids: len(ids) > 1
         )
 
     def __str__(self):
@@ -35,7 +36,7 @@ class TraverseIFCDAG(BaseTraverseDAG):
     #     instance_definition_proxies = getattr(self.root, "definitionGeometry", [])
     #     return {el.applicationId: el.objects for el in instance_definition_proxies}
 
-    def _get_instanced_objects_collection_name(self) -> str:
+    def _get_vendor_specific_instanced_objects_collection_name(self) -> str:
         """
         Override to use IFC-specific collection name for instanced objects
         

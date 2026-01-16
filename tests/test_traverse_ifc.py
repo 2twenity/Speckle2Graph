@@ -19,9 +19,9 @@ def receive_speckle_object():
     return root
 
 def test_traverse(root):
-    from speckle2graph import TraverseRevitDAG
+    from speckle2graph import TraverseIFCDAG
 
-    traversed_speckle_object = TraverseRevitDAG(root)
+    traversed_speckle_object = TraverseIFCDAG(root)
 
     return traversed_speckle_object
 

@@ -1,8 +1,6 @@
 from speckle2graph import DataGraphBuilder
-from speckle2graph import TraverseRevitDAG
 from speckle2graph import TraverseIFCDAG
 from speckle2graph import Neo4jClientDriverWrapper
-from speckle2graph import Neo4jRevitLabelAssigner
 from speckle2graph import Neo4jIfcLabelAssigner
 
 from neo4j import GraphDatabase
@@ -16,8 +14,8 @@ def receive_speckle_object():
 
     load_dotenv()
     speckle_token = os.getenv("SPECKLE_TOKEN")
-    PROJECT_ID = os.getenv("REVIT_PROJECT_ID")
-    ROOT = os.getenv("REVIT_ROOT")
+    PROJECT_ID = os.getenv("IFC_PROJECT_ID")
+    ROOT = os.getenv("IFC_ROOT")
 
     client = SpeckleClient()
     client.authenticate_with_token(speckle_token)
@@ -27,7 +25,7 @@ def receive_speckle_object():
     return root
 
 def build_graph(root):
-    traversed_speckle_object = TraverseRevitDAG(root)
+    traversed_speckle_object = TraverseIFCDAG(root)
 
     graph_builder = DataGraphBuilder(traversed_speckle_object=traversed_speckle_object)
     graph_builder.build_graph()
@@ -49,7 +47,7 @@ def test_graph_writing():
         neo4j_client_wrapper = Neo4jClientDriverWrapper(
             driver=driver, 
             graph_builder_object=graph_builder_object,
-            label_assigner=Neo4jRevitLabelAssigner()
+            label_assigner=Neo4jIfcLabelAssigner()
             )
         neo4j_client_wrapper.write_graph()
         

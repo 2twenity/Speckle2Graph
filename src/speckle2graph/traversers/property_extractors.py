@@ -2,7 +2,6 @@
 from typing import Protocol
 from specklepy.objects.data_objects import DataObject
 
-
 class PropertyExtractor(Protocol):
     """Protocol for extracting vendor-specific properties from Speckle objects"""
     
@@ -18,14 +17,12 @@ class PropertyExtractor(Protocol):
         """
         ...
 
-
 class RevitPropertyExtractor:
     """Extracts properties specific to Revit models"""
     
     def extract_type_classifier(self, head: DataObject) -> str:
         """Extract Revit category"""
         return getattr(head, "category", "")
-
 
 class IFCPropertyExtractor:
     """Extracts properties specific to IFC models"""
