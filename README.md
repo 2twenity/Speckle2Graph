@@ -12,7 +12,7 @@ The semantics of a BIM model are locked within the modelling software, which cre
 Currently we support Neo4j only.
 
 # Key Features
-- Convert BIM models to Neo4j graph databases in 3 lines of code
+- Convert BIM models to Neo4j graph databases in a few lines of code
 - Support for Revit models via Speckle
 - Preserves model relationships and hierarchies
 - Extensible for custom ontologies
