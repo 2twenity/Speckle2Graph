@@ -13,7 +13,7 @@ Currently we support Neo4j only.
 
 # Key Features
 - Convert BIM models to Neo4j graph databases in a few lines of code
-- Support for Revit models via Speckle
+- Support for Revit and IFC models via Speckle
 - Preserves model relationships and hierarchies
 - Extensible for custom ontologies
 
